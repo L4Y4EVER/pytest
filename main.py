@@ -9,6 +9,103 @@ import datetime as dt
 # import numpy as np
 
 
+# 获取有关发消息之间差值方法
+def make_everyday_data():
+    dateDict = []
+
+    # 3月25日开始 time.
+    for info in os.listdir('D:/downloads/dataCSV'):
+        domain = os.path.abspath('D:/downloads/dataCSV')
+        fn = os.path.join(domain, info)
+        content = pd.read_csv(fn,encoding='ISO-8859-1',names=['cyjid'],header=0)
+        ids = set()
+        for i in range(len(content)):
+            ids.add(str.split(content['cyjid'][i], '@')[0])
+        dateDict.append(ids)
+
+    date = []
+    nl = []
+    newl = []
+    new_ratiol = []
+    onel = []
+    one_ratiol = []
+    threel = []
+    three_ratiol = []
+    sevenl = []
+    seven_ratiol = []
+    thirtyl = []
+    thirty_ratiol = []
+
+    # 留存1 日 3日 7日 30日 留存人数 留存率 每日新增 新增率
+    d = dt.date.today().replace(2022,3,3)
+    l = len(dateDict)
+    for index in range(l):
+        new = 0
+        new_ratio = 0
+        one = 0
+        one_ratio = 0
+        three = 0
+        three_ratio = 0
+        seven = 0
+        seven_ratio = 0
+        thirty = 0
+        thirty_ratio = 0
+        now = dateDict[index]
+        n = len(now)
+        if((index - 1 ) >= 0):
+            y = dateDict[index - 1]
+            for a in iter(now):
+                if(not (a in y)):
+                    new += 1
+            new_ratio = new / len(y) * 100
+
+        if((index + 1) < l):
+            t = dateDict[index + 1]
+            for a in iter(t):
+                if(a in now):
+                    one += 1
+            one_ratio = one / n * 100
+
+        if((index + 2) < l):
+            t1 = dateDict[index + 2]
+            for a in iter(t1):
+                if(a in now):
+                    three += 1
+            three_ratio = three / n * 100
+
+        if((index + 6) < l):
+            t2 = dateDict[index + 6]
+            for a in iter(t2):
+                if(a in now):
+                    seven += 1
+            seven_ratio = seven / n * 100
+
+        if((index + 29) < l):
+            t3 = dateDict[index + 29]
+            for a in iter(t3):
+                if(a in now):
+                    thirty += 1
+            thirty_ratio = thirty / n * 100
+
+        date.append(d.strftime('%Y-%m-%d'))
+        nl.append(n)
+        newl.append(new)
+        new_ratiol.append(new_ratio)
+        onel.append(one)
+        one_ratiol.append(one_ratio)
+        threel.append(three)
+        three_ratiol.append(three_ratio)
+        sevenl.append(seven)
+        seven_ratiol.append(seven_ratio)
+        thirtyl.append(thirty)
+        thirty_ratiol.append(thirty_ratio)
+        d = d + dt.timedelta(1)
+
+    dataframe = pd.DataFrame(
+        {'日期': date, '日活':nl,'新增人数': newl, '日留存人数': onel,'三日留存人数': threel,'七日留存人数': sevenl,'三十日留存人数': thirtyl,
+         '新增比例': new_ratiol, '日留存比例': one_ratiol, '三日留存比例': three_ratiol, '七日留存比例': seven_ratiol, '三十日留存比例': thirty_ratiol})
+    dataframe.to_csv("D:/work/log/test2.csv", index=False, sep=',')
+
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
